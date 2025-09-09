@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  back-end:
+    build:
+      context: ./back-end
+    image: softy-pinko-back-end:task5
+    # No ports mapped to host - only accessible internally
+    expose:
+      - "5252"
+    networks:
+      - app-network
+
+  front-end:
+    build:
+      context: ./front-end
+    image: softy-pinko-front-end:task5
+    # No ports mapped to host - only accessible internally
+    expose:
+      - "9000"
+    depends_on:
+      - back-end
+    networks:
+      - app-network
+
+  proxy:
+    build:
+      context: ./proxy
+    image: softy-pinko-proxy:task5
+    ports:
+      - "80:80"  # Only the proxy is accessible from the host
+    depends_on:
+      - front-end
+      - back-end
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
